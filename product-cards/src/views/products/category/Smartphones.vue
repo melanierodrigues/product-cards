@@ -16,6 +16,15 @@
         </div>
     </div>
     <!-- *********************************************
+    *                  Price Filter                  *
+    ********************************************** -->
+    <div class="price-container">
+        <input id="minValue" name="minValue" type="number" v-model="minValue" @blur="validationInputs()"/>
+        <input id="maxValue" name="maxValue" type="number" v-model="maxValue" @blur="validationInputs()"/>
+        <div>{{ minValue }}</div>
+        <div>{{ maxValue }}</div>
+    </div>
+    <!-- *********************************************
     *                  Product List                  *
     ********************************************** -->
     <div v-if="!!productsList" class="product-list-container">
@@ -41,8 +50,8 @@ const brandList = ref()
 const isOpen = ref(false)
 const isVisible = ref(false)
 
-const checkboxGroupParams = ref([])
 const checkboxSelected = ref([])
+const checkboxGroupParams = ref([])
 
 const checkboxClicked = event => {
     filteredProductsList.value = productsList.value
@@ -60,7 +69,9 @@ const checkboxClicked = event => {
             container = container.reduce((list, sub) => list.concat(sub), [])
         }
 
-        return filteredProductsList.value = container
+        filteredProductsList.value = container
+        validationInputs()
+        return
     }
     
     /* Add */
@@ -72,12 +83,34 @@ const checkboxClicked = event => {
 	}
 
     container = container.reduce((list, sub) => list.concat(sub), [])
-    return filteredProductsList.value = container
+    filteredProductsList.value = container
+    validationInputs()
 }
 
 watch(() => checkboxSelected.value.length === 0, (newVal, oldVal) => {
     if (filteredProductsList.value.length === 0) filteredProductsList.value = productsList.value
 })
+
+/*************************************************
+*              Price Filter Logic                *
+*************************************************/
+const minValue = ref()
+const maxValue = ref()
+
+const validationInputs = () => {
+    let container = []
+    for (var item in checkboxSelected.value) {
+        container.push(productsList.value.filter(el => el.brand === checkboxSelected.value[item]))
+        container = container.reduce((list, sub) => list.concat(sub), [])
+    }
+
+    filteredProductsList.value = container
+
+    filteredProductsList.value = checkboxSelected.value.length > 0 ? filteredProductsList.value : productsList.value
+    if (maxValue.value && minValue.value) return filteredProductsList.value = filteredProductsList.value.filter(el => el.price >= minValue.value && el.price <= maxValue.value)
+    if (minValue.value && !maxValue.value) filteredProductsList.value = filteredProductsList.value.filter(el => el.price > minValue.value)
+    if (maxValue.value && !minValue.value) filteredProductsList.value = filteredProductsList.value.filter(el => el.price < maxValue.value)
+}
 
 /*************************************************
 *                Initail Requests                *
@@ -142,6 +175,22 @@ initialRequests()
 
     ::-webkit-scrollbar-button {
         display: none;
+    }
+}
+
+.price-container {
+    width: fit-content;
+    margin-top: 80px;
+
+    input {
+        width: 80px;
+        background-color: transparent;
+        border: 1px solid rgb(141, 141, 238);
+        border-radius: 16px;
+        color: blueviolet;
+        font-weight: 700;
+        line-height: 3.38;
+        padding-inline: 1rem;
     }
 }
 .product-list-container {
