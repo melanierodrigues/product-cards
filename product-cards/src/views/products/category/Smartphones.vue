@@ -4,29 +4,33 @@
     ********************************************** -->
     <div class="checkbox-container">
         <div style="max-width: calc(100% - 14px);" @click="[isOpen = !isOpen, isVisible = false]">Filters</div>
-        <div v-if="isOpen" class="checkbox-group">
-            <!-- *********************************************
-            *                  Price Filter                  *
-            ********************************************** -->
-            <div class="price-container">
-                <input id="minValue" name="minValue" type="number" min="0" v-model="minValue" @blur="validationInputs()"/>
-                <span> - </span>
-                <input id="maxValue" name="maxValue" type="number" min="0" v-model="maxValue" @blur="validationInputs()"/>
-                <span> €</span>
-                <div style="font-size: 14px; margin-top: 8px;" @click="[minValue = null, maxValue = null, validationInputs()]">Clear price range</div>
+        <transition
+        name="show-details"
+        @after-enter="isVisible = true">
+            <div v-if="isOpen" class="checkbox-group">
+                <!-- *********************************************
+                *                  Price Filter                  *
+                ********************************************** -->
+                <div class="price-container">
+                    <input id="minValue" name="minValue" type="number" min="0" v-model="minValue" @blur="validationInputs()"/>
+                    <span> - </span>
+                    <input id="maxValue" name="maxValue" type="number" min="0" v-model="maxValue" @blur="validationInputs()"/>
+                    <span> €</span>
+                    <div style="font-size: 14px; margin-top: 8px;" @click="[minValue = null, maxValue = null, validationInputs()]">Clear price range</div>
+                </div>
+                <!-- *********************************************
+                *                  Brands Filter                 *
+                ********************************************** -->
+                <div>
+                    <checkbox
+                    v-for="checkbox in checkboxGroupParams"
+                    :id="checkbox.id"
+                    :text="checkbox.text"
+                    :selected="checkbox.selected"
+                    @clicked="[checkboxClicked($event), checkbox.selected = !checkbox.selected]"/>
+                </div>
             </div>
-            <!-- *********************************************
-            *                  Brands Filter                 *
-            ********************************************** -->
-            <div>
-                <checkbox
-                v-for="checkbox in checkboxGroupParams"
-                :id="checkbox.id"
-                :text="checkbox.text"
-                :selected="checkbox.selected"
-                @clicked="[checkboxClicked($event), checkbox.selected = !checkbox.selected]"/>
-            </div>
-        </div>
+        </transition>
     </div>
 
     <!-- *********************************************
@@ -156,6 +160,8 @@ initialRequests()
     top: 18px;
     left: 18px;
 
+    cursor: pointer;
+
     .checkbox-group {
         overflow-y: scroll;
         text-align: start;
@@ -174,6 +180,20 @@ initialRequests()
                 line-height: 3.38;
                 padding-inline: 1rem;
             }
+        }
+
+        &.show-details-enter-active,
+        &.show-details-leave-active {
+            max-height: 1000px;
+            opacity: 1;
+            transition: all 800ms ease-in;
+        }
+
+        &.show-details-enter-from,
+        &.show-details-leave-to {
+            max-height: 0;
+            opacity: 0.2;
+            transition: all 500ms ease-out;
         }
     }
 
