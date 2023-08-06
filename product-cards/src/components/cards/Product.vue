@@ -18,21 +18,23 @@
         *                   Bottom Info                  *
         ********************************************** -->
         <div class="bottom-info">
-            <!-- Category -->
-            <div class="category">{{ product.category }}</div>
-            <div class="product">
-                <!-- Title -->
-                <div class="title">{{ product.title }}</div>
-                <!-- Brand -->
-                <div class="brand">| {{ product.brand }}</div>
+            <div class="info">
+                <!-- Category -->
+                <div class="category">{{ product.category }}</div>
+                <div class="product">
+                    <!-- Title -->
+                    <div class="title">{{ product.title }}</div>
+                    <!-- Brand -->
+                    <div class="brand">| {{ product.brand }}</div>
+                </div>
+                <!-- Description -->
+                <div class="description">{{ product.description }}</div>
             </div>
-            <!-- Description -->
-            <div class="description">{{ product.description }}</div>
             <div class="price-wrapper">
                 <!-- Price -->
                 <div class="price">{{ product.price }}€</div>
                 <!-- Info when stock is less than 40 units -->
-                <div v-if="product.stock < 40" class="units-left">Only a few units left</div>
+                <div class="units-left">{{ product.stock < 40 ? 'Only a few units left' : null }}</div>
             </div>
         </div>
     </div>
@@ -120,7 +122,7 @@ slideImage()
 
     .bottom-info {
         max-width: 230px;
-        height: 230px; /* 302px ? */
+        height: 280px; /* 205px ? */
         flex-shrink: 0;
 
         background-color: white;
@@ -129,45 +131,51 @@ slideImage()
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        justify-content: space-between;
 
-
-        .category {
-            color: #312F2E;
-            /* font-family: Proxima Nova; */
-            font-size: 12px;
-            font-weight: 400;
-            line-height: 130%;
-        }
-
-        .product {
+        .info {
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: flex-start;
             gap: 8px;
-            row-gap: 0px;
-
-            .title {
+            .category {
                 color: #312F2E;
                 /* font-family: Proxima Nova; */
-                font-size: 18px;
-                font-weight: 700;
+                font-size: 12px;
+                font-weight: 400;
                 line-height: 130%;
+            }
+
+            .product {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+                row-gap: 0px;
+
+                .title {
+                    color: #312F2E;
+                    /* font-family: Proxima Nova; */
+                    font-size: 18px;
+                    font-weight: 700;
+                    line-height: 130%;
+                    text-align: start;
+                }
+            }
+
+            .description {
+                color: #312F2E;
+                /* font-family: Inter; */
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 150%;
                 text-align: start;
             }
         }
 
-        .description {
-            color: #312F2E;
-            /* font-family: Inter; */
-            font-size: 12px;
-            font-weight: 400;
-            line-height: 150%;
-            text-align: start;
-        }
-
         .price-wrapper {
             width: 100%;
+            height: 87.6px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -178,14 +186,13 @@ slideImage()
                 font-size: 48px;
                 font-weight: 700;
             }
-
-            .units-left {
-                color: #9FABBC;
-                /* font-family: Proxima Nova; */
-                font-size: 12px;
-                font-weight: 400;
-                line-height: 130%;
-            }
+        }
+        .units-left {
+            color: #9FABBC;
+            /* font-family: Proxima Nova; */
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 130%;
         }
     }
 }

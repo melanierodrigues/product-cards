@@ -198,7 +198,7 @@ initialRequests()
 }
 .product-list-container {
     min-width: fit-content;
-    height: fit-content;
+    // height: fit-content;
     display: flex;
     flex-direction: row;
     justify-content: center;
