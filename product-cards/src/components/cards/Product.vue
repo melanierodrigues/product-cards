@@ -66,7 +66,7 @@ watch(() => counter.value, () => {
 slideImage()
 </script>
   
-<style scoped>
+<style lang="scss" scoped>
 .card-wrapper {
     width: 230px;
     height: fit-content;

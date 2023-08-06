@@ -1,28 +1,149 @@
 <template>
-    <div class="product-list-container">
-        <product-card v-for="product in productsList" :product="product"/>
+    <!-- *********************************************
+    *                  Brand Filter                  *
+    ********************************************** -->
+    <div class="checkbox-container">
+        <div style="max-width: calc(100% - 14px);" @click="[isOpen = !isOpen, isVisible = false]">Brands</div>
+        <div v-if="isOpen" class="checkbox-group">
+        <div>
+            <checkbox
+            v-for="checkbox in checkboxGroupParams"
+            :id="checkbox.id"
+            :text="checkbox.text"
+            :selected="checkbox.selected"
+            @clicked="[checkboxClicked($event), checkbox.selected = !checkbox.selected]"/>
+        </div>
+        </div>
+    </div>
+    <!-- *********************************************
+    *                  Product List                  *
+    ********************************************** -->
+    <div v-if="!!productsList" class="product-list-container">
+        <product-card v-for="product in filteredProductsList ? filteredProductsList : productsList" :product="product"/>
     </div>
 </template>
 
 <script setup>
+import Checkbox from '../../../components/checkbox/Base.vue'
 import ProductCard from '../../../components/cards/Product.vue'
 
 /* Vue */
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const productsList = ref()
+const filteredProductsList = ref()
 
+/*************************************************
+*              Brand Filter Logic                *
+*************************************************/
+const brandList = ref()
+
+const isOpen = ref(false)
+const isVisible = ref(false)
+
+const checkboxGroupParams = ref([])
+const checkboxSelected = ref([])
+
+const checkboxClicked = event => {
+    filteredProductsList.value = productsList.value
+
+    /* Remove */
+    if (checkboxSelected.value.find(el => el === event) && !productsList.value.filter(el => el.brand === event).selected) {
+        const index = checkboxSelected.value.indexOf(event)
+        checkboxSelected.value.splice(index, 1)
+
+        let container = []
+        console.log('remove', checkboxSelected.value)
+
+        for (var item in checkboxSelected.value) {
+            container.push(productsList.value.filter(el => el.brand === checkboxSelected.value[item]))
+            container = container.reduce((list, sub) => list.concat(sub), [])
+        }
+
+        return filteredProductsList.value = container
+    }
+    
+    /* Add */
+    let container = []
+    checkboxSelected.value.push(event)
+
+    for (var item in checkboxSelected.value) {
+		container.push(productsList.value.filter(el => el.brand === checkboxSelected.value[item]))
+	}
+
+    container = container.reduce((list, sub) => list.concat(sub), [])
+    return filteredProductsList.value = container
+}
+
+watch(() => checkboxSelected.value.length === 0, (newVal, oldVal) => {
+    if (filteredProductsList.value.length === 0) filteredProductsList.value = productsList.value
+})
+
+/*************************************************
+*                Initail Requests                *
+*************************************************/
 const initialRequests = async () => {
     let response = await fetch('https://dummyjson.com/products')
     .then(res => res.json())
 
     productsList.value = response.products
+    brandList.value = response.products.forEach(item => {
+        if (checkboxGroupParams.value.find(el => el.text === item.brand)) return
+        
+        checkboxGroupParams.value.push({
+            id: item.brand,
+            text: item.brand,
+            selected: false
+       })
+    })
 }
 
 initialRequests()
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.checkbox-container {
+    width: 250px;
+    max-height: 300px;
+    padding: 14px 0 14px 14px;
+    border-radius: 16px;
+    border: 1px solid rgb(141, 141, 238);
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(242, 233, 250);
+    overflow: auto;
+    color: blueviolet;
+    font-weight: 700;
+
+    transition: all 800ms ease-in;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+
+    .checkbox-group {
+        overflow-y: scroll;
+        text-align: start;
+    }
+
+    ::-webkit-scrollbar {
+        width: 24px;
+    }
+
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 20px 20px transparent;
+        border: solid 20px transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        box-shadow: inset 0 0 20px 20px blueviolet;
+        border: solid 9px transparent;
+        border-radius: 14px;
+    }
+
+    ::-webkit-scrollbar-button {
+        display: none;
+    }
+}
 .product-list-container {
     min-width: fit-content;
     height: fit-content;
@@ -31,5 +152,12 @@ initialRequests()
     justify-content: center;
     flex-wrap: wrap;
     gap: 16px;
+    margin-top: 80px;
+}
+
+@media only screen and (max-width: 600px) {
+    .checkbox-container {
+        width: calc(100% - 64px);
+    }
 }
 </style>

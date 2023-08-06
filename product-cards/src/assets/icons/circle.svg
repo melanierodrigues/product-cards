@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+    <g class="change-color" fill="none" fill-rule="evenodd" stroke="#99ADBD">
+        <path fill-rule="nonzero" stroke-width="1.5" d="M12 .75C5.787.75.75 5.787.75 12S5.787 23.25 12 23.25 23.25 18.213 23.25 12 18.213.75 12 .75z" opacity="1"/>
+    </g>
+</svg>
