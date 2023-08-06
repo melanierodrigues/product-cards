@@ -1,29 +1,34 @@
 <template>
     <!-- *********************************************
-    *                  Brand Filter                  *
+    *                     Filters                    *
     ********************************************** -->
     <div class="checkbox-container">
-        <div style="max-width: calc(100% - 14px);" @click="[isOpen = !isOpen, isVisible = false]">Brands</div>
+        <div style="max-width: calc(100% - 14px);" @click="[isOpen = !isOpen, isVisible = false]">Filters</div>
         <div v-if="isOpen" class="checkbox-group">
-        <div>
-            <checkbox
-            v-for="checkbox in checkboxGroupParams"
-            :id="checkbox.id"
-            :text="checkbox.text"
-            :selected="checkbox.selected"
-            @clicked="[checkboxClicked($event), checkbox.selected = !checkbox.selected]"/>
-        </div>
+            <!-- *********************************************
+            *                  Price Filter                  *
+            ********************************************** -->
+            <div class="price-container">
+                <input id="minValue" name="minValue" type="number" min="0" v-model="minValue" @blur="validationInputs()"/>
+                <span> - </span>
+                <input id="maxValue" name="maxValue" type="number" min="0" v-model="maxValue" @blur="validationInputs()"/>
+                <span> €</span>
+                <div style="font-size: 14px; margin-top: 8px;" @click="[minValue = null, maxValue = null, validationInputs()]">Clear price range</div>
+            </div>
+            <!-- *********************************************
+            *                  Brands Filter                 *
+            ********************************************** -->
+            <div>
+                <checkbox
+                v-for="checkbox in checkboxGroupParams"
+                :id="checkbox.id"
+                :text="checkbox.text"
+                :selected="checkbox.selected"
+                @clicked="[checkboxClicked($event), checkbox.selected = !checkbox.selected]"/>
+            </div>
         </div>
     </div>
-    <!-- *********************************************
-    *                  Price Filter                  *
-    ********************************************** -->
-    <div class="price-container">
-        <input id="minValue" name="minValue" type="number" v-model="minValue" @blur="validationInputs()"/>
-        <input id="maxValue" name="maxValue" type="number" v-model="maxValue" @blur="validationInputs()"/>
-        <div>{{ minValue }}</div>
-        <div>{{ maxValue }}</div>
-    </div>
+
     <!-- *********************************************
     *                  Product List                  *
     ********************************************** -->
@@ -62,8 +67,6 @@ const checkboxClicked = event => {
         checkboxSelected.value.splice(index, 1)
 
         let container = []
-        console.log('remove', checkboxSelected.value)
-
         for (var item in checkboxSelected.value) {
             container.push(productsList.value.filter(el => el.brand === checkboxSelected.value[item]))
             container = container.reduce((list, sub) => list.concat(sub), [])
@@ -156,6 +159,22 @@ initialRequests()
     .checkbox-group {
         overflow-y: scroll;
         text-align: start;
+
+        .price-container {
+            width: fit-content;
+            margin: 16px 0;
+
+            input {
+                width: 63px;
+                background-color: transparent;
+                border: 1px solid rgb(141, 141, 238);
+                border-radius: 16px;
+                color: blueviolet;
+                font-weight: 700;
+                line-height: 3.38;
+                padding-inline: 1rem;
+            }
+        }
     }
 
     ::-webkit-scrollbar {
@@ -175,22 +194,6 @@ initialRequests()
 
     ::-webkit-scrollbar-button {
         display: none;
-    }
-}
-
-.price-container {
-    width: fit-content;
-    margin-top: 80px;
-
-    input {
-        width: 80px;
-        background-color: transparent;
-        border: 1px solid rgb(141, 141, 238);
-        border-radius: 16px;
-        color: blueviolet;
-        font-weight: 700;
-        line-height: 3.38;
-        padding-inline: 1rem;
     }
 }
 .product-list-container {
